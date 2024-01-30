@@ -11,9 +11,10 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
       
-      - run: cd frontend
       - run: npm install
+        working-directory: ./frontend
       - run: npm run build
+        working-directory: ./frontend
 
       - name: Install SSH Key
         uses: shimataro/ssh-key-action@v2
@@ -25,9 +26,11 @@ jobs:
         run: ssh-keyscan -p ${{ secrets.SSH_PORT }} -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy [build] with rsync
+        working-directory: ./frontend
         run: rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" ./build/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/whaticket/frontend/
 
       - name: Deploy [node_modules] with rsync
+        working-directory: ./frontend
         run: rsync -avz -e "ssh -p ${{ secrets.SSH_PORT }}" ./node_modules/ ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:/home/whaticket/frontend/
         
       # - name: Restart Server
